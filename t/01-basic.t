@@ -4,7 +4,9 @@ use warnings;
 use lib 't/01';
 use Test::More;
 
-no circular::require;
+use circular::require ();
+
+circular::require->unimport;
 
 {
     my $warnings;
@@ -30,9 +32,37 @@ no circular::require;
     clear();
 }
 
+circular::require->import;
+
+{
+    my $warnings;
+    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
+    use_ok('Foo');
+    is($warnings, undef, "correct warnings");
+    clear();
+}
+
+{
+    my $warnings;
+    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
+    use_ok('Bar');
+    is($warnings, undef, "correct warnings");
+    clear();
+}
+
+{
+    my $warnings;
+    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
+    use_ok('Baz');
+    is($warnings, undef, "correct warnings");
+    clear();
+}
+
 sub clear {
     for (qw(Foo Bar Baz)) {
+        no strict 'refs';
         delete $::{$_};
+        delete ${$_ . '::'}{quux};
         delete $INC{"$_.pm"};
     }
 }
