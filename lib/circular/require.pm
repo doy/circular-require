@@ -111,6 +111,12 @@ L<http://search.cpan.org/dist/circular-require>
 
 =back
 
+=begin Pod::Coverage
+
+unimport
+
+=end Pod::Coverage
+
 =cut
 
 1;
