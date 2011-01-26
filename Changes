@@ -1,6 +1,7 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - handle 'require VERSION' properly on 5.8
 
 0.01  2011-01-25
       - Initial release
