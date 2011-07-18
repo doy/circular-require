@@ -1,6 +1,7 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - work around annoying base.pm behavior (reported by wooster)
 
 0.02  2011-01-25
       - handle 'require VERSION' properly on 5.8 (ether)
