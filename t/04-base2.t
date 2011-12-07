@@ -9,7 +9,8 @@ use Test::Exception;
 no circular::require;
 
 use_ok('Foo');
-is( Foo->bar, "bar", "Polymorphism" );
+lives_ok { is( Foo->bar, "bar", "Polymorphism" ) }
+    "bar() method available on Foo";
 
 throws_ok { base->import( 'BadWolf' ) }
     qr|Base class package "BadWolf" is empty|, "use base 'Some Bad File' should throw an exception";
