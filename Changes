@@ -1,6 +1,7 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - fix the previous workaround (Exodist)
 
 0.03  2011-07-18
       - work around annoying base.pm behavior (reported by wooster)
