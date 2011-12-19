@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 't/01';
+use lib 't/basic';
 use Test::More;
 
 use circular::require ();

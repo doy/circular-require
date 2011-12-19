@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 't/04';
+use lib 't/base2';
 use Test::More;
 use Test::Exception;
 
