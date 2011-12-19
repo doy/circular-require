@@ -1,6 +1,8 @@
 Revision history for circular-require
 
 {{$NEXT}}
+
+0.04  2011-12-19
       - fix the previous workaround (Exodist)
 
 0.03  2011-07-18
