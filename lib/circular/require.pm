@@ -47,16 +47,7 @@ sub _require {
     # string contexts at all
     my $string_file = $file;
     if (exists $seen{$string_file} && !$seen{$string_file}) {
-        my $num = 0;
-        my $caller;
-
-        $caller = caller($num++)
-            while !$caller
-                || $caller eq 'base'
-                || $caller eq 'parent'
-                || $caller eq __PACKAGE__;
-
-        warn "Circular require detected: $string_file (from $caller)\n";
+        warn "Circular require detected: $string_file (from " . caller() . ")\n";
     }
     $seen{$string_file} = 0;
     my $ret;
@@ -70,7 +61,7 @@ sub _require {
         $mod =~ s+[/\\]+::+g;
         $mod =~ s+\.pm$++;
         $ret = $saved
-            ? $saved->($file) : do { eval "no strict; CORE::require($mod)" || die $@ };
+            ? $saved->($file) : do { eval "CORE::require $mod" || die $@ };
     }
     else {
         $ret = $saved ? $saved->($file) : CORE::require($file);
