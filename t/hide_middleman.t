@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 't/05';
+use lib 't/hide_middleman';
 use Test::More;
 use Test::Exception;
 
@@ -9,9 +9,9 @@ my @warnings;
 $SIG{__WARN__} = sub { push @warnings => @_ };
 
 # Test passes if you comment this out
-no circular::require;
+no circular::require hide => 'base';
 
-use_ok('Foo');
+use_ok( 'Foo' );
 
 is_deeply(
     \@warnings,
