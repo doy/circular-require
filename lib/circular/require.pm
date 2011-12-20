@@ -21,6 +21,12 @@ or
 
   perl -M-circular::require foo.pl
 
+or to hide loaders such as base.pm or parent.pm Any package name(s) can be
+used.
+
+  no circular::require hide => [ qw/base parent/ ];
+
+
 =head1 DESCRIPTION
 
 Perl by default just ignores cycles in require statements - if Foo.pm does
@@ -39,6 +45,7 @@ module has not finished executing.
 
 my %seen;
 my $saved;
+my %settings;
 
 sub _require {
     my ($file) = @_;
@@ -47,7 +54,14 @@ sub _require {
     # string contexts at all
     my $string_file = $file;
     if (exists $seen{$string_file} && !$seen{$string_file}) {
-        warn "Circular require detected: $string_file (from " . caller() . ")\n";
+        my $depth = 0;
+        my $caller;
+
+        $caller = caller( $depth++ )
+            while !$caller
+                || grep { m/^$caller$/ } @{ $settings{hide} };
+
+        warn "Circular require detected: $string_file (from $caller)\n";
     }
     $seen{$string_file} = 0;
     my $ret;
@@ -81,11 +95,27 @@ sub import {
 }
 
 sub unimport {
+    my $class = shift;
+    $class->settings( @_ );
+
     my $stash = Package::Stash->new('CORE::GLOBAL');
     my $old_require = $stash->get_package_symbol('&require');
     $saved = $old_require
         if defined($old_require) && $old_require != \&_require;
     $stash->add_package_symbol('&require', \&_require);
+}
+
+sub settings {
+    my $class = shift;
+    my %params = @_;
+
+    %settings = ( %settings, %params );
+
+    $settings{hide} = [ $settings{hide} ]
+        if $settings{hide}
+        && !ref $settings{hide};
+
+    return %settings;
 }
 
 =head1 CAVEATS
