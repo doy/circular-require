@@ -21,12 +21,6 @@ or
 
   perl -M-circular::require foo.pl
 
-or to hide loaders such as base.pm or parent.pm Any package name(s) can be
-used.
-
-  no circular::require hide => [ qw/base parent/ ];
-
-
 =head1 DESCRIPTION
 
 Perl by default just ignores cycles in require statements - if Foo.pm does
@@ -40,6 +34,17 @@ lead to some very confusing errors, especially if introspection is happening at
 load time (C<make_immutable> in L<Moose> classes, for example). This module
 generates a warning whenever a module is skipped due to being loaded, if that
 module has not finished executing.
+
+In some situations, other modules might be handling the module loading for
+you - C<use base> and C<Class::Load::load_class>, for instance. To avoid these
+modules showing up as the source of cycles, you can use the C<hide> parameter
+when using this module. For example:
+
+  no circular::require hide => [qw(base parent Class::Load)];
+
+or
+
+  perl -M'-circular::require hide => [qw(base parent Class::Load)];' foo.pl
 
 =cut
 
