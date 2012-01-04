@@ -45,7 +45,7 @@ module has not finished executing.
 
 my %seen;
 my $saved;
-my %settings;
+my @hide;
 
 sub _require {
     my ($file) = @_;
@@ -58,8 +58,7 @@ sub _require {
         my $caller;
 
         $caller = caller( $depth++ )
-            while !$caller
-                || grep { m/^$caller$/ } @{ $settings{hide} };
+            while !$caller || grep { m/^$caller$/ } @hide;
 
         warn "Circular require detected: $string_file (from $caller)\n";
     }
@@ -96,26 +95,16 @@ sub import {
 
 sub unimport {
     my $class = shift;
-    $class->settings( @_ );
+    my %params = @_;
+
+    @hide = ref($params{'hide'}) ? @{ $params{'hide'} } : ($params{'hide'})
+        if exists $params{'hide'};
 
     my $stash = Package::Stash->new('CORE::GLOBAL');
     my $old_require = $stash->get_package_symbol('&require');
     $saved = $old_require
         if defined($old_require) && $old_require != \&_require;
     $stash->add_package_symbol('&require', \&_require);
-}
-
-sub settings {
-    my $class = shift;
-    my %params = @_;
-
-    %settings = ( %settings, %params );
-
-    $settings{hide} = [ $settings{hide} ]
-        if $settings{hide}
-        && !ref $settings{hide};
-
-    return %settings;
 }
 
 =head1 CAVEATS
