@@ -48,7 +48,7 @@ or
 
 =cut
 
-my %seen;
+my %being_loaded;
 my $saved;
 my @hide;
 
@@ -58,7 +58,7 @@ sub _require {
     # treat it as a vstring, so be sure we don't use the incoming value in
     # string contexts at all
     my $string_file = $file;
-    if (exists $seen{$string_file} && !$seen{$string_file}) {
+    if ($being_loaded{$string_file}) {
         my $depth = 0;
         my $caller;
 
@@ -71,7 +71,7 @@ sub _require {
 
         warn "Circular require detected: $string_file (from $caller)\n";
     }
-    $seen{$string_file} = 0;
+    $being_loaded{$string_file} = 1;
     my $ret;
     # XXX ugh, base.pm checks against the regex
     # /^Can't locate .*? at \(eval / to see if it should suppress the error
@@ -89,7 +89,7 @@ sub _require {
     else {
         $ret = $saved ? $saved->($file) : CORE::require($file);
     }
-    $seen{$string_file} = 1;
+    delete $being_loaded{$string_file};
     return $ret;
 }
 
