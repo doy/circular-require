@@ -1,6 +1,8 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - allow using -hide to avoid reporting unhelpful packages in the error
+        message (Exodist)
 
 0.04  2011-12-19
       - fix the previous workaround (Exodist)
