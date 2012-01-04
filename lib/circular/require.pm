@@ -83,7 +83,8 @@ sub _require {
         $mod =~ s+[/\\]+::+g;
         $mod =~ s+\.pm$++;
         $ret = $saved
-            ? $saved->($file) : do { eval "CORE::require $mod" || die $@ };
+            ? $saved->($file)
+            : (eval "CORE::require $mod" || die $@);
     }
     else {
         $ret = $saved ? $saved->($file) : CORE::require($file);
