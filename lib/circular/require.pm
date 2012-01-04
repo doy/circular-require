@@ -62,8 +62,12 @@ sub _require {
         my $depth = 0;
         my $caller;
 
-        $caller = caller( $depth++ )
-            while !$caller || grep { m/^$caller$/ } @hide;
+        do {
+            $caller = caller($depth++)
+        } while defined($caller) && grep { m/^$caller$/ } @hide;
+
+        $caller = '<unknown package>'
+            unless defined $caller;
 
         warn "Circular require detected: $string_file (from $caller)\n";
     }
