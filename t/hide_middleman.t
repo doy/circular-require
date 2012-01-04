@@ -9,7 +9,7 @@ my @warnings;
 $SIG{__WARN__} = sub { push @warnings => @_ };
 
 # Test passes if you comment this out
-no circular::require hide => 'base';
+no circular::require -hide => 'base';
 
 use_ok( 'Foo' );
 

@@ -37,14 +37,14 @@ module has not finished executing.
 
 In some situations, other modules might be handling the module loading for
 you - C<use base> and C<Class::Load::load_class>, for instance. To avoid these
-modules showing up as the source of cycles, you can use the C<hide> parameter
+modules showing up as the source of cycles, you can use the C<-hide> parameter
 when using this module. For example:
 
-  no circular::require hide => [qw(base parent Class::Load)];
+  no circular::require -hide => [qw(base parent Class::Load)];
 
 or
 
-  perl -M'-circular::require hide => [qw(base parent Class::Load)];' foo.pl
+  perl -M'-circular::require -hide => [qw(base parent Class::Load)];' foo.pl
 
 =cut
 
@@ -102,8 +102,8 @@ sub unimport {
     my $class = shift;
     my %params = @_;
 
-    @hide = ref($params{'hide'}) ? @{ $params{'hide'} } : ($params{'hide'})
-        if exists $params{'hide'};
+    @hide = ref($params{'-hide'}) ? @{ $params{'-hide'} } : ($params{'-hide'})
+        if exists $params{'-hide'};
 
     my $stash = Package::Stash->new('CORE::GLOBAL');
     my $old_require = $stash->get_package_symbol('&require');
