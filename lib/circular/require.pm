@@ -48,9 +48,10 @@ or
 
 =cut
 
-my %being_loaded;
+our %being_loaded;
 my $saved;
 my @hide;
+our $current;
 
 sub _require {
     my ($file) = @_;
@@ -58,20 +59,19 @@ sub _require {
     # treat it as a vstring, so be sure we don't use the incoming value in
     # string contexts at all
     my $string_file = $file;
-    if ($being_loaded{$string_file}) {
-        my $depth = 0;
-        my $caller;
+    if (exists $being_loaded{$string_file}) {
+        my $caller = $current;
 
-        do {
-            $caller = caller($depth++)
-        } while defined($caller) && grep { m/^$caller$/ } @hide;
+        $caller = $being_loaded{$caller}
+            while defined($caller) && grep { m/^$caller$/ } @hide;
 
         $caller = '<unknown package>'
             unless defined $caller;
 
         warn "Circular require detected: $string_file (from $caller)\n";
     }
-    $being_loaded{$string_file} = 1;
+    local $being_loaded{$string_file} = $current;
+    local $current = $string_file;
     my $ret;
     # XXX ugh, base.pm checks against the regex
     # /^Can't locate .*? at \(eval / to see if it should suppress the error
@@ -79,9 +79,7 @@ sub _require {
     # definitely break if some other module that overrides CORE::require tries
     # to do the same thing
     if (caller eq 'base') {
-        my $mod = $file;
-        $mod =~ s+[/\\]+::+g;
-        $mod =~ s+\.pm$++;
+        my $mod = _pm2mod($file);
         $ret = $saved
             ? $saved->($file)
             : (eval "CORE::require $mod" || die $@);
@@ -89,7 +87,6 @@ sub _require {
     else {
         $ret = $saved ? $saved->($file) : CORE::require($file);
     }
-    delete $being_loaded{$string_file};
     return $ret;
 }
 
@@ -109,12 +106,27 @@ sub unimport {
 
     @hide = ref($params{'-hide'}) ? @{ $params{'-hide'} } : ($params{'-hide'})
         if exists $params{'-hide'};
+    @hide = map { /\.pm/ ? $_ : _mod2pm($_) } @hide;
 
     my $stash = Package::Stash->new('CORE::GLOBAL');
     my $old_require = $stash->get_package_symbol('&require');
     $saved = $old_require
         if defined($old_require) && $old_require != \&_require;
     $stash->add_package_symbol('&require', \&_require);
+}
+
+sub _mod2pm {
+    my ($mod) = @_;
+    $mod =~ s+::+/+g;
+    $mod .= '.pm';
+    return $mod;
+}
+
+sub _pm2mod {
+    my ($file) = @_;
+    $file =~ s+/+::+g;
+    $file =~ s+\.pm$++;
+    return $file;
 }
 
 =head1 CAVEATS
