@@ -75,12 +75,11 @@ sub _require {
     local $loaded_from{$string_file} = $previous_file;
     local $previous_file = $string_file;
     my $ret;
-    # XXX ugh, base.pm checks against the regex
+    # ugh, base.pm checks against the regex
     # /^Can't locate .*? at \(eval / to see if it should suppress the error
-    # but we're not in an eval anymore... fake it for now, but this will
-    # definitely break if some other module that overrides CORE::require tries
-    # to do the same thing
-    if (caller eq 'base') {
+    # but we're not in an eval anymore
+    # fake it up so that this looks the same
+    if (defined((caller(1))[6])) {
         my $mod = _pm2mod($file);
         $ret = $saved_require_hook
             ? $saved_require_hook->($file)
