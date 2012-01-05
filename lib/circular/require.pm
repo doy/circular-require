@@ -80,10 +80,11 @@ sub _require {
     # but we're not in an eval anymore
     # fake it up so that this looks the same
     if (defined((caller(1))[6])) {
-        my $mod = _pm2mod($file);
+        require B;
+        my $str = B::perlstring($file);
         $ret = $saved_require_hook
             ? $saved_require_hook->($file)
-            : (eval "CORE::require $mod" || die $@);
+            : (eval "CORE::require($str)" || die $@);
     }
     else {
         $ret = $saved_require_hook
@@ -123,13 +124,6 @@ sub _mod2pm {
     $mod =~ s+::+/+g;
     $mod .= '.pm';
     return $mod;
-}
-
-sub _pm2mod {
-    my ($file) = @_;
-    $file =~ s+/+::+g;
-    $file =~ s+\.pm$++;
-    return $file;
 }
 
 =head1 CAVEATS
