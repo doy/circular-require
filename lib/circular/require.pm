@@ -48,10 +48,10 @@ or
 
 =cut
 
-our %being_loaded;
-my $saved;
+our %loaded_from;
+our $previous_file;
+my $saved_require_hook;
 my @hide;
-our $current;
 
 sub _require {
     my ($file) = @_;
@@ -59,11 +59,11 @@ sub _require {
     # treat it as a vstring, so be sure we don't use the incoming value in
     # string contexts at all
     my $string_file = $file;
-    if (exists $being_loaded{$string_file}) {
-        my $caller = $current;
+    if (exists $loaded_from{$string_file}) {
+        my $caller = $previous_file;
 
         while (grep { m/^$caller$/ } @hide) {
-            $caller = $being_loaded{$caller};
+            $caller = $loaded_from{$caller};
             if (!defined($caller) || $caller eq $string_file) {
                 $caller = '<unknown file>';
                 last;
@@ -72,8 +72,8 @@ sub _require {
 
         warn "Circular require detected: $string_file (from $caller)\n";
     }
-    local $being_loaded{$string_file} = $current;
-    local $current = $string_file;
+    local $loaded_from{$string_file} = $previous_file;
+    local $previous_file = $string_file;
     my $ret;
     # XXX ugh, base.pm checks against the regex
     # /^Can't locate .*? at \(eval / to see if it should suppress the error
@@ -82,20 +82,22 @@ sub _require {
     # to do the same thing
     if (caller eq 'base') {
         my $mod = _pm2mod($file);
-        $ret = $saved
-            ? $saved->($file)
+        $ret = $saved_require_hook
+            ? $saved_require_hook->($file)
             : (eval "CORE::require $mod" || die $@);
     }
     else {
-        $ret = $saved ? $saved->($file) : CORE::require($file);
+        $ret = $saved_require_hook
+            ? $saved_require_hook->($file)
+            : CORE::require($file);
     }
     return $ret;
 }
 
 sub import {
     my $stash = Package::Stash->new('CORE::GLOBAL');
-    if ($saved) {
-        $stash->add_package_symbol('&require' => $saved);
+    if ($saved_require_hook) {
+        $stash->add_package_symbol('&require' => $saved_require_hook);
     }
     else {
         $stash->remove_package_symbol('&require');
@@ -112,7 +114,7 @@ sub unimport {
 
     my $stash = Package::Stash->new('CORE::GLOBAL');
     my $old_require = $stash->get_package_symbol('&require');
-    $saved = $old_require
+    $saved_require_hook = $old_require
         if defined($old_require) && $old_require != \&_require;
     $stash->add_package_symbol('&require', \&_require);
 }
