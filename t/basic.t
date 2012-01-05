@@ -13,6 +13,11 @@ circular::require->unimport;
     local $SIG{__WARN__} = sub { $warnings .= $_[0] };
     use_ok('Foo');
     is($warnings, "Circular require detected: Foo.pm (from Baz.pm)\nCircular require detected: Baz.pm (from Bar.pm)\n", "correct warnings");
+
+    undef $warnings;
+    use_ok('Foo');
+    is($warnings, undef, "using the same file twice doesn't repeat warnings");
+
     clear();
 }
 
