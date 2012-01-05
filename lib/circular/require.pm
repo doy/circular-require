@@ -62,11 +62,13 @@ sub _require {
     if (exists $being_loaded{$string_file}) {
         my $caller = $current;
 
-        $caller = $being_loaded{$caller}
-            while defined($caller) && grep { m/^$caller$/ } @hide;
-
-        $caller = '<unknown package>'
-            unless defined $caller;
+        while (grep { m/^$caller$/ } @hide) {
+            $caller = $being_loaded{$caller};
+            if (!defined($caller) || $caller eq $string_file) {
+                $caller = '<unknown file>';
+                last;
+            }
+        }
 
         warn "Circular require detected: $string_file (from $caller)\n";
     }
