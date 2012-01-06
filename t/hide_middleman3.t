@@ -19,7 +19,7 @@ my @warnings;
 
 is_deeply(
     \@warnings,
-    ["Circular require detected: Foo.pm (from <unknown file>)\n"],
+    ["Circular require detected in Foo.pm (from unknown file)\n"],
     "don't loop infinitely if all packages are hidden"
 );
 

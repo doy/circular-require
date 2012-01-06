@@ -16,7 +16,7 @@ my @warnings;
 
 is_deeply(
     \@warnings,
-    ["Circular require detected: Bar.pm (from <unknown file>)\n"],
+    ["Circular require detected in Bar.pm (from unknown file)\n"],
     "hiding all packages in the cycle shouldn't report a package outside of the cycle as being the source"
 );
 

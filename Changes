@@ -1,6 +1,7 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - show the entire cycle in the warning
 
 0.05  2012-01-04
       - allow using -hide to avoid reporting unhelpful packages in the error

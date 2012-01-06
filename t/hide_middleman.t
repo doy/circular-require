@@ -16,7 +16,7 @@ my @warnings;
 
 is_deeply(
     \@warnings,
-    ["Circular require detected: Foo.pm (from Bar.pm)\n"],
+    ["Circular require detected:\n  Foo.pm\n  Bar.pm\n  Foo.pm\n"],
     "Show the module that used base, instead of 'base' when a cycle occurs from a use base."
 );
 
