@@ -4,6 +4,9 @@ use warnings;
 # ABSTRACT: detect circularity in use/require statements
 
 use Package::Stash;
+# XXX would be nice to load this on demand, but "on demand" is within the
+# require override, which causes a mess (on pre-5.14)
+use B;
 
 =head1 SYNOPSIS
 
@@ -110,7 +113,6 @@ sub _require {
     # but we're not in an eval anymore
     # fake it up so that this looks the same
     if (defined((caller(1))[6])) {
-        require B;
         my $str = B::perlstring($file);
         $ret = $saved_require_hook
             ? $saved_require_hook->($file)
