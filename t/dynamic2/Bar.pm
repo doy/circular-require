@@ -1,5 +1,5 @@
 package Bar;
-use Baz;
+require Baz;
 use circular::require;
-use Quux;
+require Quux;
 1;

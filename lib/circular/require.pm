@@ -132,7 +132,7 @@ sub import {
         $stash->add_package_symbol('&require' => $saved_require_hook);
     }
     else {
-        $stash->remove_package_symbol('&require');
+        $stash->add_package_symbol('&require' => sub { CORE::require(@_) });
     }
     # not delete, because we want to see it being explicitly disabled
     $^H{'circular::require'} = 0;
