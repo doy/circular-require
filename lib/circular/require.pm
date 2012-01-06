@@ -3,6 +3,7 @@ use strict;
 use warnings;
 # ABSTRACT: detect circularity in use/require statements
 
+use 5.010;
 use Package::Stash;
 # XXX would be nice to load this on demand, but "on demand" is within the
 # require override, which causes a mess (on pre-5.14)
