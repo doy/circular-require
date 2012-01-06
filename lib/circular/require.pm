@@ -116,7 +116,7 @@ sub unimport {
 
     @hide = ref($params{'-hide'}) ? @{ $params{'-hide'} } : ($params{'-hide'})
         if exists $params{'-hide'};
-    @hide = map { /\.pm/ ? $_ : _mod2pm($_) } @hide;
+    @hide = map { /\.pm$/ ? $_ : _mod2pm($_) } @hide;
 
     my $stash = Package::Stash->new('CORE::GLOBAL');
     my $old_require = $stash->get_package_symbol('&require');
