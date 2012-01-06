@@ -35,7 +35,7 @@ no circular::require;
     clear();
 }
 
-circular::require->import;
+use circular::require;
 
 {
     my $warnings;
