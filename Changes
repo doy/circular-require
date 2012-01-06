@@ -1,6 +1,8 @@
 Revision history for circular-require
 
 {{$NEXT}}
+
+0.08  2012-01-06
       - loading B on demand causes issues, stop doing that
       - deleting CORE::GLOBAL::require on "use circular::require" makes require
         calls that were already bound stop working, stop doing that (it's
