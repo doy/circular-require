@@ -1,63 +1,68 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use lib 't/basic';
 use Test::More;
-
-no circular::require;
+use lib 't/basic';
 
 {
+    no circular::require;
+
     my $warnings;
     local $SIG{__WARN__} = sub { $warnings .= $_[0] };
     use_ok('Foo');
     is($warnings, "Circular require detected:\n  Foo.pm\n  Baz.pm\n  Foo.pm\nCircular require detected:\n  Baz.pm\n  Bar.pm\n  Baz.pm\n", "correct warnings");
 
+    clear();
+}
+
+{
+    no circular::require;
+    use circular::require;
+
+    my $warnings;
+    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
+    use_ok('Foo');
+    is($warnings, undef, "correct warnings");
+
+    clear();
+}
+
+{
+    no circular::require;
+
+    my $warnings;
+    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
+    use_ok('Foo');
+    is($warnings, "Circular require detected:\n  Foo.pm\n  Baz.pm\n  Foo.pm\nCircular require detected:\n  Baz.pm\n  Bar.pm\n  Baz.pm\n", "correct warnings");
+
+    clear();
     undef $warnings;
-    use_ok('Foo');
-    is($warnings, undef, "using the same file twice doesn't repeat warnings");
 
-    clear();
+    {
+        use circular::require;
+
+        use_ok('Foo');
+        is($warnings, undef, "correct warnings");
+
+        clear();
+        undef $warnings;
+
+        {
+            no circular::require;
+
+            use_ok('Foo');
+            is($warnings, "Circular require detected:\n  Foo.pm\n  Baz.pm\n  Foo.pm\nCircular require detected:\n  Baz.pm\n  Bar.pm\n  Baz.pm\n", "correct warnings");
+        }
+
+    }
 }
-
-{
-    my $warnings;
-    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
-    use_ok('Bar');
-    is($warnings, "Circular require detected:\n  Baz.pm\n  Foo.pm\n  Baz.pm\nCircular require detected:\n  Bar.pm\n  Baz.pm\n  Bar.pm\n", "correct warnings");
-    clear();
-}
-
-{
-    my $warnings;
-    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
-    use_ok('Baz');
-    is($warnings, "Circular require detected:\n  Baz.pm\n  Foo.pm\n  Baz.pm\nCircular require detected:\n  Baz.pm\n  Bar.pm\n  Baz.pm\n", "correct warnings");
-    clear();
-}
-
-circular::require->import;
 
 {
     my $warnings;
     local $SIG{__WARN__} = sub { $warnings .= $_[0] };
     use_ok('Foo');
     is($warnings, undef, "correct warnings");
-    clear();
-}
 
-{
-    my $warnings;
-    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
-    use_ok('Bar');
-    is($warnings, undef, "correct warnings");
-    clear();
-}
-
-{
-    my $warnings;
-    local $SIG{__WARN__} = sub { $warnings .= $_[0] };
-    use_ok('Baz');
-    is($warnings, undef, "correct warnings");
     clear();
 }
 

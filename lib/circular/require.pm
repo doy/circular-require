@@ -53,6 +53,17 @@ our $previous_file;
 my $saved_require_hook;
 my @hide;
 
+sub _find_enable_state {
+    my $depth = 0;
+    while (defined(scalar(caller(++$depth)))) {
+        my $hh = (caller($depth))[10];
+        next unless defined $hh;
+        next unless exists $hh->{'circular::require'};
+        return $hh->{'circular::require'};
+    }
+    return 0;
+}
+
 sub _require {
     my ($file) = @_;
     # on 5.8, if a value has both a string and numeric value, require will
@@ -71,11 +82,13 @@ sub _require {
             $caller = $loaded_from{$caller};
         }
 
-        if (@cycle > 1) {
-            warn "Circular require detected:\n  " . join("\n  ", @cycle) . "\n";
-        }
-        else {
-            warn "Circular require detected in $string_file (from unknown file)\n";
+        if (_find_enable_state()) {
+            if (@cycle > 1) {
+                warn "Circular require detected:\n  " . join("\n  ", @cycle) . "\n";
+            }
+            else {
+                warn "Circular require detected in $string_file (from unknown file)\n";
+            }
         }
     }
     local $loaded_from{$string_file} = $previous_file;
@@ -108,6 +121,8 @@ sub import {
     else {
         $stash->remove_package_symbol('&require');
     }
+    # not delete, because we want to see it being explicitly disabled
+    $^H{'circular::require'} = 0;
 }
 
 sub unimport {
@@ -123,6 +138,7 @@ sub unimport {
     $saved_require_hook = $old_require
         if defined($old_require) && $old_require != \&_require;
     $stash->add_package_symbol('&require', \&_require);
+    $^H{'circular::require'} = 1;
 }
 
 sub _mod2pm {
