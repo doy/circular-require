@@ -1,6 +1,8 @@
 Revision history for circular-require
 
 {{$NEXT}}
+
+0.09  2012-01-07
       - fix some bugs in require VERSION when circular::require is loaded
         (reported by Exodist)
 
