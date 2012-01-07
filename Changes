@@ -1,6 +1,8 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - fix some bugs in require VERSION when circular::require is loaded
+        (reported by Exodist)
 
 0.08  2012-01-06
       - loading B on demand causes issues, stop doing that
