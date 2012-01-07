@@ -113,7 +113,11 @@ sub _require {
     # /^Can't locate .*? at \(eval / to see if it should suppress the error
     # but we're not in an eval anymore
     # fake it up so that this looks the same
-    if (defined((caller(1))[6])) {
+    if ($string_file =~ m/^v?[\d\._]+$/) {
+        # Support versions
+        eval "CORE::require $file" || die $@;
+    }
+    elsif (defined((caller(1))[6])) {
         my $str = B::perlstring($file);
         $ret = $saved_require_hook
             ? $saved_require_hook->($file)
