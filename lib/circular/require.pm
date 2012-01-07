@@ -106,25 +106,34 @@ sub _require {
             }
         }
     }
+
     local $loaded_from{$string_file} = $previous_file;
     local $previous_file = $string_file;
-    my $ret;
-    # ugh, base.pm checks against the regex
-    # /^Can't locate .*? at \(eval / to see if it should suppress the error
-    # but we're not in an eval anymore
-    # fake it up so that this looks the same
-    if (defined((caller(1))[6])) {
+
+    return $saved_require_hook->($file)
+        if $saved_require_hook;
+
+    if (ref(\$file) eq 'VSTRING') {
+        # require 5.8.1
+        return eval sprintf("CORE::require %vd", $file) || die $@;
+    }
+    elsif (!(B::svref_2object(\$file)->FLAGS & B::SVf_POK)) {
+        # require 5.008
+        # note: we are careful above to never use $file in any potential string
+        # contexts - this is what the $string_file variable is for
+        return eval "CORE::require $file" || die $@;
+    }
+    elsif (defined((caller(1))[6])) {
+        # ugh, base.pm checks against the regex
+        # /^Can't locate .*? at \(eval / to see if it should suppress the error
+        # but we're not in an eval anymore
+        # fake it up so that this looks the same
         my $str = B::perlstring($file);
-        $ret = $saved_require_hook
-            ? $saved_require_hook->($file)
-            : (eval "CORE::require($str)" || die $@);
+        return eval "CORE::require($str)" || die $@;
     }
     else {
-        $ret = $saved_require_hook
-            ? $saved_require_hook->($file)
-            : CORE::require($file);
+        return CORE::require($file);
     }
-    return $ret;
 }
 
 sub import {
