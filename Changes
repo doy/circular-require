@@ -1,6 +1,8 @@
 Revision history for circular-require
 
 {{$NEXT}}
+
+0.10  2013-01-09
       - stop using deprecated Package::Stash api
 
 0.09  2012-01-07
