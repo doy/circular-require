@@ -1,6 +1,7 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - stop using deprecated Package::Stash api
 
 0.09  2012-01-07
       - fix some bugs in require VERSION when circular::require is loaded

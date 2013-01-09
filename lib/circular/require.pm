@@ -150,10 +150,10 @@ sub unimport {
     @hide = map { /\.pm$/ ? $_ : _mod2pm($_) } @hide;
 
     my $stash = Package::Stash->new('CORE::GLOBAL');
-    my $old_require = $stash->get_package_symbol('&require');
+    my $old_require = $stash->get_symbol('&require');
     $saved_require_hook = $old_require
         if defined($old_require) && $old_require != \&_require;
-    $stash->add_package_symbol('&require', \&_require);
+    $stash->add_symbol('&require', \&_require);
     $^H{'circular::require'} = 1;
 }
 
