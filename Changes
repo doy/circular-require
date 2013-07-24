@@ -1,6 +1,7 @@
 Revision history for circular-require
 
 {{$NEXT}}
+      - convert to Devel::OverrideGlobalRequire
 
 0.10  2013-01-09
       - stop using deprecated Package::Stash api
