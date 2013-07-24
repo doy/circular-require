@@ -6,7 +6,9 @@ use Test::More;
 
 no circular::require -hide => [
     qw(base Foo Bar main circular::require),
-    (map { my $m = $_; $m =~ s+/+::+g; $m =~ s/\.pm$//; $m } keys %INC),
+    (grep { /\.pm$/ }
+          map { my $m = $_; $m =~ s+/+::+g; $m =~ s/\.pm$//; $m }
+              keys %INC),
 ];
 
 my @warnings;
