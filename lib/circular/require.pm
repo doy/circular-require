@@ -133,9 +133,8 @@ L<Devel::OverrideGlobalRequire> for more information.
 
 No known bugs.
 
-Please report any bugs through RT: email
-C<bug-circular-require at rt.cpan.org>, or browse to
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=circular-require>.
+Please report any bugs to GitHub Issues at
+L<https://github.com/doy/circular-require/issues>.
 
 =head1 SUPPORT
 
@@ -147,21 +146,21 @@ You can also look for information at:
 
 =over 4
 
-=item * AnnoCPAN: Annotated CPAN documentation
+=item * MetaCPAN
 
-L<http://annocpan.org/dist/circular-require>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/circular-require>
+L<https://metacpan.org/release/circular-require>
 
 =item * RT: CPAN's request tracker
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=circular-require>
 
-=item * Search CPAN
+=item * Github
 
-L<http://search.cpan.org/dist/circular-require>
+L<https://github.com/doy/circular-require>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/circular-require>
 
 =back
 

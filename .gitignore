@@ -1,5 +1,6 @@
 cover_db
-META.yml
+META.*
+MYMETA.*
 Makefile
 blib
 inc
@@ -9,5 +10,8 @@ Makefile.old
 nytprof.out
 MANIFEST.bak
 *.sw[po]
+.DS_Store
 .build
 circular-require-*
+*.bs
+*.o
