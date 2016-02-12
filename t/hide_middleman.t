@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
+no circular::require -hide => 'base';
+
 use strict;
 use warnings;
 use lib 't/hide_middleman';
 use Test::More;
-
-no circular::require -hide => 'base';
 
 my @warnings;
 
