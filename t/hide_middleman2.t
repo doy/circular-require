@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
+no circular::require -hide => ['base', 'parent'];
+
 use strict;
 use warnings;
 use lib 't/hide_middleman';
 use Test::More;
 
-no circular::require -hide => ['base', 'parent'];
 
 my @warnings;
 
